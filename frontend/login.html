@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eolite – Přihlášení</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>Eolite</h1>
+        <p>Admin Panel</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="admin@eolite.cz" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Heslo</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="loginError" class="login-error" style="display:none;"></div>
+        <button type="submit" class="btn-primary btn-full" id="loginBtn">Přihlásit se</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    const form = document.getElementById('loginForm');
+    const errorEl = document.getElementById('loginError');
+    const loginBtn = document.getElementById('loginBtn');
+
+    // Redirect if already logged in
+    const token = localStorage.getItem('eolite_token');
+    if (token) window.location.href = '/admin';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display = 'none';
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Přihlašuji...';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const contentType = response.headers.get('content-type');
+        if (!response.ok) {
+          const err = contentType?.includes('application/json')
+            ? await response.json()
+            : { error: await response.text() };
+          throw new Error(err.error || 'Přihlášení selhalo');
+        }
+
+        const data = await response.json();
+        localStorage.setItem('eolite_token', data.token);
+        localStorage.setItem('eolite_user', JSON.stringify(data.user));
+        window.location.href = '/admin';
+      } catch (error) {
+        errorEl.textContent = error.message;
+        errorEl.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Přihlásit se';
+      }
+    });
+  </script>
+</body>
+</html>

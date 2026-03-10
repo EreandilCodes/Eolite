@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eolite – Admin Panel</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin-page">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <h2>Eolite</h2>
+      <div class="logo-tagline">Admin Panel</div>
+    </div>
+    <nav class="admin-nav">
+      <ul>
+        <li><a href="#" data-section="refCategories" class="active">
+          <i>📂</i> Kategorie ref.
+        </a></li>
+        <li><a href="#" data-section="references">
+          <i>🏗</i> Reference
+        </a></li>
+        <li><a href="#" data-section="magazine">
+          <i>📰</i> Magazín
+        </a></li>
+        <li><a href="#" data-section="inquiries">
+          <i>📩</i> Poptávky
+        </a></li>
+        <li><a href="#" data-section="gallery">
+          <i>🖼</i> Galerie
+        </a></li>
+        <li class="nav-separator"></li>
+        <li><a href="#" data-section="pages">
+          <i>📄</i> Obsah stránek
+        </a></li>
+        <li><a href="#" data-section="settings">
+          <i>⚙️</i> Nastavení
+        </a></li>
+        <li class="nav-separator"></li>
+        <li><a href="/" target="_blank">
+          <i>🌐</i> Zobrazit web
+        </a></li>
+        <li><a href="#" class="logout-btn">
+          <i>🚪</i> Odhlásit se
+        </a></li>
+      </ul>
+    </nav>
+    <div style="padding:1rem 1.25rem;font-size:0.75rem;color:var(--text-muted);border-top:1px solid rgba(255,255,255,0.08);margin-top:auto">
+      <span id="adminUserEmail"></span>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1 id="sectionTitle">Kategorie referencí</h1>
+      <button id="addNewBtn" class="btn-primary">
+        <span>+</span> Přidat
+      </button>
+    </div>
+
+    <!-- ======================================================
+         REFERENCE CATEGORIES SECTION
+         ====================================================== -->
+    <section id="refCategoriesSection" class="admin-section active">
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:80px">Pořadí</th>
+              <th>Název</th>
+              <th>Slug</th>
+              <th>Tag</th>
+              <th>Status</th>
+              <th style="width:100px">Akce</th>
+            </tr>
+          </thead>
+          <tbody id="refCategoriesTableBody">
+            <tr><td colspan="6" class="empty-state">Načítám...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         REFERENCES SECTION
+         ====================================================== -->
+    <section id="referencesSection" class="admin-section">
+      <div class="admin-filters-bar">
+        <select id="refFilterCategory" class="admin-filter-select">
+          <option value="">Všechny kategorie</option>
+        </select>
+        <input type="text" id="refFilterName" class="admin-filter-input" placeholder="Hledat podle názvu…">
+        <select id="refFilterStatus" class="admin-filter-select">
+          <option value="">Všechny statusy</option>
+          <option value="active">Aktivní</option>
+          <option value="hidden">Skrytá</option>
+        </select>
+        <select id="refFilterSort" class="admin-filter-select">
+          <option value="newest">Nejnovější</option>
+          <option value="oldest">Nejstarší</option>
+          <option value="name">Název A–Z</option>
+        </select>
+      </div>
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:70px">Foto</th>
+              <th>Název</th>
+              <th>Kategorie</th>
+              <th>Status</th>
+              <th>Datum</th>
+              <th style="width:100px">Akce</th>
+            </tr>
+          </thead>
+          <tbody id="referencesTableBody">
+            <tr><td colspan="6" class="empty-state">Načítám...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         MAGAZINE SECTION
+         ====================================================== -->
+    <section id="magazineSection" class="admin-section">
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Název</th>
+              <th>Slug</th>
+              <th>Status</th>
+              <th>Datum</th>
+              <th style="width:100px">Akce</th>
+            </tr>
+          </thead>
+          <tbody id="magazineTableBody">
+            <tr><td colspan="5" class="empty-state">Načítám...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         INQUIRIES SECTION
+         ====================================================== -->
+    <section id="inquiriesSection" class="admin-section">
+      <h2 id="inquiriesSectionTitle" style="margin-bottom:1.25rem;font-size:1rem;font-weight:600">Poptávky</h2>
+      <div class="admin-filters-bar">
+        <select id="inqFilterStatus" class="admin-filter-select" onchange="admin.inquiries.applyFilters()">
+          <option value="">Všechny statusy</option>
+          <option value="unread">Nové (nepřečtené)</option>
+          <option value="read">Přečtené</option>
+        </select>
+        <select id="inqFilterSort" class="admin-filter-select" onchange="admin.inquiries.applyFilters()">
+          <option value="newest">Nejnovější</option>
+          <option value="oldest">Nejstarší</option>
+        </select>
+        <input type="text" id="inqFilterName" class="admin-filter-input" placeholder="Jméno…"
+          onkeydown="if(event.key==='Enter') admin.inquiries.applyFilters()">
+        <input type="text" id="inqFilterEmail" class="admin-filter-input" placeholder="Email…"
+          onkeydown="if(event.key==='Enter') admin.inquiries.applyFilters()">
+        <input type="text" id="inqFilterMessage" class="admin-filter-input" placeholder="Text zprávy…"
+          onkeydown="if(event.key==='Enter') admin.inquiries.applyFilters()">
+        <button type="button" class="btn-secondary" onclick="admin.inquiries.applyFilters()">Vyhledej</button>
+      </div>
+      <div id="inquiriesContainer" style="display:flex;flex-direction:column;gap:1rem;">
+        <p class="empty-message">Načítám...</p>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         GALLERY SECTION
+         ====================================================== -->
+    <section id="gallerySection" class="admin-section">
+      <div class="gallery-layout">
+
+        <!-- Folder tree panel -->
+        <div class="gallery-folders-panel">
+          <div class="gallery-panel-header">
+            <span>Složky</span>
+            <button class="btn-icon" onclick="admin.gallery.showFolderModal()" title="Nová složka">+ Složka</button>
+          </div>
+          <div id="galleryFolderTree">
+            <div class="gallery-folder-item active" onclick="admin.gallery.setActiveFolder(null)">
+              <span class="folder-name">🗂 Vše</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Images panel -->
+        <div class="gallery-images-panel">
+          <div class="gallery-toolbar">
+            <input type="search" id="gallerySearch" placeholder="🔍 Hledat podle identifieru nebo názvu...">
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width:60px">Foto</th>
+                  <th>Identifier / Název</th>
+                  <th>Složka</th>
+                  <th>Tagy</th>
+                  <th style="width:80px">Akce</th>
+                </tr>
+              </thead>
+              <tbody id="galleryImagesTableBody">
+                <tr><td colspan="5" class="empty-state">Načítám...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================
+         PAGES SECTION
+         ====================================================== -->
+    <section id="pagesSection" class="admin-section">
+      <div class="admin-table-container">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Klíč sekce</th>
+              <th>Název</th>
+              <th>Status</th>
+              <th style="width:80px">Akce</th>
+            </tr>
+          </thead>
+          <tbody id="pagesTableBody">
+            <tr><td colspan="4" class="empty-state">Načítám...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================
+       NOTIFICATION TOAST
+       ====================================================== -->
+  <div id="notification"></div>
+
+  <!-- ======================================================
+       MODAL: Reference Category
+       ====================================================== -->
+  <div id="refCategoryModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="refCategoryModalTitle">Nová kategorie</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="refCategoryForm">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="catNameCZ">Název (CZ) *</label>
+              <input type="text" id="catNameCZ" required placeholder="Exteriéry">
+            </div>
+            <div class="form-group">
+              <label for="catNameEN">Název (EN)</label>
+              <input type="text" id="catNameEN" placeholder="Exteriors">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="catSlug">Slug (URL)</label>
+              <input type="text" id="catSlug" placeholder="exteriery">
+              <p class="form-hint">Nechejte prázdné pro automatické generování</p>
+            </div>
+            <div class="form-group">
+              <label for="catTag">Tag</label>
+              <input type="text" id="catTag" placeholder="exteriér">
+            </div>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="catActive" checked>
+            <label for="catActive">Aktivní (zobrazit na webu)</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Reference
+       ====================================================== -->
+  <div id="referenceModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width:680px">
+      <div class="modal-header">
+        <h3 id="refModalTitle">Nová reference</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="referenceForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="refCategoryId">Kategorie *</label>
+            <select id="refCategoryId" required>
+              <option value="">-- Vyberte kategorii --</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="refTitleCZ">Název (CZ) *</label>
+              <input type="text" id="refTitleCZ" required placeholder="Rekonstrukce fasády">
+            </div>
+            <div class="form-group">
+              <label for="refTitleEN">Název (EN)</label>
+              <input type="text" id="refTitleEN" placeholder="Facade renovation">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="refDescCZ">Popis (CZ)</label>
+            <textarea id="refDescCZ" rows="3" placeholder="Popis projektu..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="refDescEN">Popis (EN)</label>
+            <textarea id="refDescEN" rows="3" placeholder="Project description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="refCoverImage">Titulní obrázek (URL)</label>
+            <div class="input-with-btn">
+              <input type="text" id="refCoverImage" placeholder="/uploads/gallery/photo.jpg">
+              <button type="button" class="btn-upload" id="btnPickRefCover" title="Vybrat z galerie">🖼 Z galerie</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="refGalleryJson">Galerie (JSON pole URL)</label>
+            <div style="margin-bottom:0.4rem">
+              <button type="button" class="btn-upload" id="btnPickRefGallery" title="Přidat fotky z galerie">🖼 Přidat z galerie</button>
+            </div>
+            <textarea id="refGalleryJson" rows="3" placeholder='["img1.jpg","img2.jpg","img3.jpg"]'></textarea>
+            <p class="form-hint">Tlačítkem vyberte fotky z galerie – nebo zadejte JSON pole URL ručně</p>
+          </div>
+          <div style="display:flex;gap:1.5rem;margin-top:0.5rem">
+            <div class="form-check">
+              <input type="checkbox" id="refFeatured">
+              <label for="refFeatured">Zvýrazněná reference</label>
+            </div>
+            <div class="form-check">
+              <input type="checkbox" id="refActive" checked>
+              <label for="refActive">Aktivní</label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Magazine Post
+       ====================================================== -->
+  <div id="magazineModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width:720px">
+      <div class="modal-header">
+        <h3 id="magazineModalTitle">Nový článek</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="magazineForm">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="artTitleCZ">Název (CZ) *</label>
+              <input type="text" id="artTitleCZ" required placeholder="Název článku">
+            </div>
+            <div class="form-group">
+              <label for="artTitleEN">Název (EN)</label>
+              <input type="text" id="artTitleEN" placeholder="Article title">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="artCoverImage">Titulní obrázek (URL)</label>
+            <div class="input-with-btn">
+              <input type="text" id="artCoverImage" placeholder="/uploads/gallery/photo.jpg">
+              <button type="button" class="btn-upload" id="btnPickArtCover" title="Vybrat z galerie">🖼 Z galerie</button>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="artExcerptCZ">Perex (CZ)</label>
+              <textarea id="artExcerptCZ" rows="2" placeholder="Krátký úvod..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="artExcerptEN">Perex (EN)</label>
+              <textarea id="artExcerptEN" rows="2" placeholder="Short intro..."></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="artContentCZ">Obsah (CZ)</label>
+            <textarea id="artContentCZ" rows="8" placeholder="Text článku..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="artContentEN">Obsah (EN)</label>
+            <textarea id="artContentEN" rows="8" placeholder="Article content..."></textarea>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="artPublished">
+            <label for="artPublished">Publikovat (zobrazit na webu)</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Page Section
+       ====================================================== -->
+  <div id="pagesModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="pagesModalTitle">Editace sekce</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="pagesForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="pageContentCZ">Obsah (CZ)</label>
+            <textarea id="pageContentCZ" rows="6" placeholder="Text sekce v češtině..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="pageContentEN">Obsah (EN)</label>
+            <textarea id="pageContentEN" rows="6" placeholder="Section text in English..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="pageImageUrl">Obrázek (URL)</label>
+            <div class="input-with-btn">
+              <input type="text" id="pageImageUrl" placeholder="/uploads/gallery/photo.jpg">
+              <button type="button" class="btn-upload" id="btnPickPageImage" title="Vybrat z galerie">🖼 Z galerie</button>
+            </div>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" id="pageActive" checked>
+            <label for="pageActive">Sekce aktivní</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Gallery Upload
+       ====================================================== -->
+  <div id="galleryUploadModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width:700px">
+      <div class="modal-header">
+        <h3>Nahrát fotky</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="galleryUploadForm">
+        <div class="modal-body">
+
+          <!-- Drop zone -->
+          <div class="upload-dropzone" id="galleryDropzone">
+            <input type="file" id="galleryFileInput" multiple accept="image/*" style="display:none">
+            <button type="button" class="btn-primary"
+              onclick="document.getElementById('galleryFileInput').click()">
+              Vyhledat fotky
+            </button>
+            <p>nebo přetáhněte soubory sem</p>
+            <p class="form-hint">JPEG, PNG, WebP, GIF · max 50 MB na soubor · automaticky zmenšeno pro web</p>
+          </div>
+
+          <!-- Thumbnails preview -->
+          <div id="galleryUploadPreviews" class="upload-preview-grid"></div>
+
+          <!-- Shared metadata -->
+          <div class="form-group">
+            <label for="uploadFolderId">Složka</label>
+            <select id="uploadFolderId">
+              <option value="">— bez složky —</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="uploadTitleCZ">Název (CZ) – sdílený</label>
+              <input type="text" id="uploadTitleCZ" placeholder="Popis fotek">
+            </div>
+            <div class="form-group">
+              <label for="uploadTitleEN">Název (EN) – sdílený</label>
+              <input type="text" id="uploadTitleEN" placeholder="Photo description">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="uploadDescCZ">Popis (CZ)</label>
+              <textarea id="uploadDescCZ" rows="2" placeholder="Delší popis..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="uploadDescEN">Popis (EN)</label>
+              <textarea id="uploadDescEN" rows="2" placeholder="Longer description..."></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="uploadTags">Tagy</label>
+              <input type="text" id="uploadTags" placeholder="exteriér, fasáda, 2024  →  doplní # automaticky">
+            </div>
+            <div class="form-group">
+              <label for="uploadDisplayOrder">Pořadí (základní)</label>
+              <input type="number" id="uploadDisplayOrder" value="0" min="0">
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div id="galleryUploadProgress" style="display:none">
+            <div class="upload-progress-bar">
+              <div id="galleryProgressFill"></div>
+            </div>
+            <p id="galleryProgressText" class="form-hint" style="margin-top:0.4rem"></p>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary" id="galleryUploadBtn" disabled>Nahrát</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Gallery Folder
+       ====================================================== -->
+  <div id="galleryFolderModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="galleryFolderModalTitle">Nová složka</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="galleryFolderForm">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="folderNameCZ">Název (CZ) *</label>
+              <input type="text" id="folderNameCZ" required placeholder="Exteriéry">
+            </div>
+            <div class="form-group">
+              <label for="folderNameEN">Název (EN)</label>
+              <input type="text" id="folderNameEN" placeholder="Exteriors">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="folderSlug">Slug</label>
+              <input type="text" id="folderSlug" placeholder="exteriery">
+              <p class="form-hint">Prázdné = automatické generování z názvu</p>
+            </div>
+            <div class="form-group">
+              <label for="folderDisplayOrder">Pořadí</label>
+              <input type="number" id="folderDisplayOrder" value="0" min="0">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="folderParentId">Nadřazená složka</label>
+            <select id="folderParentId">
+              <option value="">— bez nadřazené složky —</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       MODAL: Gallery Image
+       ====================================================== -->
+  <div id="galleryImageModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content" style="max-width:680px">
+      <div class="modal-header">
+        <h3 id="galleryImageModalTitle">Nová fotka</h3>
+        <button class="modal-close" aria-label="Zavřít">×</button>
+      </div>
+      <form id="galleryImageForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="imageUrl">URL obrázku *</label>
+            <input type="text" id="imageUrl" required placeholder="/uploads/foto.jpg">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="imageIdentifier">Identifier *</label>
+              <input type="text" id="imageIdentifier" required placeholder="fasada-projekt-2024">
+              <p class="form-hint">Unikátní, jen a–z 0–9 - _ (max 80 znaků)</p>
+            </div>
+            <div class="form-group">
+              <label for="imageFolderId">Složka</label>
+              <select id="imageFolderId">
+                <option value="">— bez složky —</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="imageTitleCZ">Název (CZ)</label>
+              <input type="text" id="imageTitleCZ" placeholder="Popis fotky">
+            </div>
+            <div class="form-group">
+              <label for="imageTitleEN">Název (EN)</label>
+              <input type="text" id="imageTitleEN" placeholder="Photo description">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="imageDescCZ">Popis (CZ)</label>
+              <textarea id="imageDescCZ" rows="2" placeholder="Delší popis..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="imageDescEN">Popis (EN)</label>
+              <textarea id="imageDescEN" rows="2" placeholder="Longer description..."></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="imageTags">Tagy</label>
+              <input type="text" id="imageTags" placeholder="exteriér, fasáda, 2024  →  doplní # automaticky">
+            </div>
+            <div class="form-group">
+              <label for="imageDisplayOrder">Pořadí</label>
+              <input type="number" id="imageDisplayOrder" value="0" min="0">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary modal-close-btn">Zrušit</button>
+          <button type="submit" class="btn-primary">Uložit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SETTINGS SECTION
+       ====================================================== -->
+  <section id="settingsSection" class="admin-section">
+    <div class="settings-column">
+
+      <!-- Email notifications card -->
+      <div class="settings-card">
+        <h3 class="settings-card-title">📧 Emailové notifikace poptávek</h3>
+        <p class="settings-card-desc">
+          Při každé nové poptávce přijde upozornění na zadané adresy.
+          Více adres oddělte čárkou.
+        </p>
+        <div class="form-group">
+          <label for="settingNotificationEmail">Notifikační emaily</label>
+          <input type="text" id="settingNotificationEmail"
+                 placeholder="admin@firma.cz, sef@firma.cz">
+          <p class="form-hint">Nechejte prázdné pro vypnutí emailových notifikací.</p>
+        </div>
+        <div class="settings-actions">
+          <button type="button" class="btn-primary" id="btnSaveSettings">Uložit</button>
+          <button type="button" class="btn-secondary" id="btnTestEmail">Odeslat testovací email</button>
+        </div>
+      </div>
+
+      <!-- SMTP info card (read-only) -->
+      <div class="settings-card">
+        <h3 class="settings-card-title">⚙️ Emailová služba (SMTP)</h3>
+        <p class="settings-card-desc">
+          Stav přenosu emailů. Nastavuje se v souboru <code>.env</code> na serveru.
+        </p>
+        <div class="settings-info-row">
+          <span>Stav</span>
+          <span id="smtpModeBadge" class="badge badge-warning">Načítám…</span>
+        </div>
+        <div class="settings-info-row">
+          <span>Odesílatel (From)</span>
+          <span id="smtpFromDisplay" class="settings-info-value">–</span>
+        </div>
+        <div class="settings-env-hint">
+          <p>Příklad <code>.env</code> pro SMTP:</p>
+          <pre>EMAIL_MODE=smtp
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=vas@gmail.com
+SMTP_PASS=heslo
+EMAIL_FROM=noreply@vasefirma.cz</pre>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================
+       MODAL: Gallery Picker (shared – used by references / magazine / pages)
+       ====================================================== -->
+  <div id="galleryPickerModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content gallery-picker-modal-content">
+      <div class="modal-header">
+        <h3 id="galleryPickerTitle">Vybrat fotku z galerie</h3>
+        <button class="modal-close" id="galleryPickerClose" aria-label="Zavřít">×</button>
+      </div>
+      <div class="modal-body">
+        <div style="margin-bottom:0.75rem">
+          <input type="text" id="galleryPickerSearch" placeholder="Hledat podle identifieru nebo názvu…" class="gallery-picker-search">
+        </div>
+        <div id="galleryPickerGrid" class="gallery-picker-grid">
+          <p class="picker-empty">Načítám…</p>
+        </div>
+      </div>
+      <div class="modal-footer" id="galleryPickerFooter" style="display:none">
+        <span class="picker-count-label">Vybráno: <strong id="galleryPickerCount">0</strong></span>
+        <button type="button" class="btn-secondary" id="galleryPickerCancel">Zrušit</button>
+        <button type="button" class="btn-primary" id="galleryPickerConfirm">Potvrdit výběr</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>

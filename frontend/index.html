@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Eolite – profesionální řešení pro váš projekt. Reference, služby, kontakt.">
+  <title>Eolite</title>
+  <link rel="stylesheet" href="/css/public.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <!-- Logo -->
+      <a href="/" class="site-logo" onclick="app.navigate('/');return false;">Eolite</a>
+
+      <!-- Main Navigation -->
+      <nav class="main-nav" id="mainNav">
+        <ul>
+          <li>
+            <a href="/" id="navHome" onclick="app.navigate('/');return false;">Úvod</a>
+          </li>
+          <li>
+            <a href="/#about" id="navAbout" onclick="app.navigate('/');document.getElementById('about')?.scrollIntoView({behavior:'smooth'});return false;">O nás</a>
+          </li>
+          <li>
+            <a href="/#sluzby" id="navServices" onclick="app.navigate('/');document.getElementById('sluzby')?.scrollIntoView({behavior:'smooth'});return false;">Služby</a>
+          </li>
+
+          <li class="has-dropdown">
+            <a href="/reference" id="navReference" onclick="app.navigate('/reference');return false;">Reference <span class="dropdown-arrow">▾</span></a>
+            <ul class="dropdown" id="referenceDropdown">
+              <li><a href="/reference" id="navAllRef" onclick="app.navigate('/reference');return false;">Všechny reference</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="/magazine" id="navMagazine" onclick="app.navigate('/magazine');return false;">Magazín</a>
+          </li>
+          <li>
+            <a href="/#kontakt" id="navContact" onclick="app.navigate('/');setTimeout(()=>document.getElementById('kontakt')?.scrollIntoView({behavior:'smooth'}),100);return false;">Kontakt</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Language switcher -->
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="cz">CZ</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+
+      <!-- Mobile toggle -->
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN CONTENT – JS-managed router renders here
+       ============================================================ -->
+  <main id="siteMain" class="site-main">
+
+    <!-- ====================================================
+         HOMEPAGE VIEW (default, shown at /)
+         ==================================================== -->
+    <div id="view-homepage" data-view="homepage">
+
+      <!-- HERO -->
+      <section id="home" class="section-hero">
+        <div class="section-container">
+          <h1 class="hero-title" id="heroTitle">Kvalitní práce, která vydrží</h1>
+          <p class="hero-subtitle" id="heroSubtitle">Profesionální řešení pro váš projekt.</p>
+          <div class="hero-actions">
+            <a href="/reference" class="btn btn-cta" id="heroCta" onclick="app.navigate('/reference');return false;">Naše reference</a>
+            <a href="#kontakt" class="btn btn-outline" id="heroCtaInquiry"
+               onclick="document.getElementById('kontakt')?.scrollIntoView({behavior:'smooth'});return false;">Poptat projekt</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- O NÁS -->
+      <section id="about" class="section-block">
+        <div class="section-container">
+          <h2 class="section-title" id="aboutHeading">O nás</h2>
+          <div id="pageContent_about" class="section-subtitle"></div>
+        </div>
+      </section>
+
+      <!-- SLUŽBY -->
+      <section id="sluzby" class="section-block alt-bg">
+        <div class="section-container">
+          <h2 class="section-title" id="servicesHeading">Služby</h2>
+          <div id="pageContent_services"></div>
+        </div>
+      </section>
+
+
+      <!-- MAGAZÍN PREVIEW -->
+      <section class="section-block alt-bg">
+        <div class="section-container">
+          <h2 class="section-title" id="magazinePreviewHeading">Magazín</h2>
+          <div class="card-grid" id="magazinePreviewGrid"></div>
+          <div style="margin-top:2rem;text-align:center">
+            <a href="/magazine" class="btn btn-dark" onclick="app.navigate('/magazine');return false;">Všechny články →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- KONTAKT + POPTÁVKOVÝ FORMULÁŘ -->
+      <section id="kontakt" class="section-contact">
+        <div class="section-container">
+          <h2 class="section-title" id="contactHeading">Kontakt</h2>
+          <div class="contact-grid">
+            <!-- Contact info -->
+            <div class="contact-info">
+              <div id="pageContent_contact"></div>
+              <div style="margin-top:1.5rem">
+                <div class="contact-info-item">
+                  <i>📧</i>
+                  <span>info@eolite.cz</span>
+                </div>
+                <div class="contact-info-item">
+                  <i>📞</i>
+                  <span>+420 000 000 000</span>
+                </div>
+                <div class="contact-info-item">
+                  <i>📍</i>
+                  <span>Praha, Česká republika</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inquiry Form -->
+            <div class="inquiry-form">
+              <h3 id="formTitle">Poptávkový formulář</h3>
+              <form id="inquiryForm" novalidate>
+
+                <!-- Honeypot – hidden from humans, bots will fill it -->
+                <div class="pub-form-honeypot" aria-hidden="true">
+                  <label for="inquiryHoneypot">Nevyplňujte toto pole</label>
+                  <input type="text" id="inquiryHoneypot" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <div class="pub-form-group">
+                  <label for="inquiryName" id="formNameLabel">Jméno *</label>
+                  <input type="text" id="inquiryName" name="name" required autocomplete="name">
+                </div>
+                <div class="pub-form-group">
+                  <label for="inquiryEmail" id="formEmailLabel">E-mail *</label>
+                  <input type="email" id="inquiryEmail" name="email" required autocomplete="email">
+                </div>
+                <div class="pub-form-group">
+                  <label for="inquiryPhone" id="formPhoneLabel">Telefon</label>
+                  <input type="tel" id="inquiryPhone" name="phone" autocomplete="tel">
+                </div>
+                <div class="pub-form-group">
+                  <label for="inquiryMessage" id="formMessageLabel">Zpráva *</label>
+                  <textarea id="inquiryMessage" name="message" required rows="5"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-cta" id="inquirySubmitBtn" style="width:100%;justify-content:center">
+                  Odeslat poptávku
+                </button>
+
+                <div id="inquiryFeedback" class="form-feedback"></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- /view-homepage -->
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <span id="footerText">© 2025 Eolite. Všechna práva vyhrazena.</span>
+    &nbsp;·&nbsp;
+    <a href="/admin">Admin</a>
+  </footer>
+
+  <!-- ============================================================
+       LIGHTBOX
+       ============================================================ -->
+  <div id="lightboxOverlay" class="lightbox-overlay" role="dialog" aria-modal="true" aria-label="Galerie">
+    <button class="lightbox-close" onclick="closeLightbox()" aria-label="Zavřít">×</button>
+    <img id="lightboxImg" class="lightbox-img" src="" alt="Galerie">
+  </div>
+
+  <script src="/js/public.js" type="module"></script>
+</body>
+</html>
