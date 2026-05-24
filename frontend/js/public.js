@@ -145,6 +145,7 @@ class PublicApp {
     this.updateLangButtons();
     this.setupLangSwitcher();
     this.setupMobileMenu();
+    this.setupHeaderScroll();
 
     // Load categories for nav dropdown
     await this.loadCategoriesForNav();
@@ -252,6 +253,26 @@ class PublicApp {
     setText('navContact', u.contact);
     setText('navInquiry', u.inquiry);
     setText('footerText', UI[this.lang].footer);
+  }
+
+  // ============================================================
+  // Sticky header scroll effect
+  // ============================================================
+  setupHeaderScroll() {
+    const header = document.querySelector('.site-header');
+    if (!header) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          header.classList.toggle('scrolled', window.scrollY > 40);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
 
   // ============================================================

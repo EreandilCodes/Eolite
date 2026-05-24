@@ -7,6 +7,7 @@
 ## Core Architecture Rules
 
 - **Reuse existing patterns before creating new ones.** When in doubt, read how magazine/references do it.
+- **No light-mode toggle** — the project intentionally maintains a single premium dark cinematic theme across both public and admin UIs.
 - **No BEGIN/COMMIT transactions** in async sqlite routes. The wrapper (`db.prepare`) is not transaction-safe.
 - **Non-critical side effects (email) must never break main request.** Always wrap in `try/catch`, log, continue.
 - **All DB schema changes via `CREATE TABLE IF NOT EXISTS` + `ALTER TABLE` try/catch** in `backend/database.js` only.
@@ -14,7 +15,10 @@
 - **All admin features use Manager CRUD class pattern** – `init()`, `loadItems()`, `renderItems()`, `showModal()`, `saveItem()`.
 - **No new frameworks** (React, Vue, etc.) without explicit approval.
 - **No inline styles in HTML** (only `class=`). Colours via CSS custom properties.
+- **Both public and admin share the same cinematic dark palette**: deep charcoal `#0b0d0e`, warm off-white `#f4f1eb`, muted gold `#c8a96a` accent. No light mode.
+- **Use the project logger in all backend code**: `import { logger } from '../logger.js'`. Never add raw `console.*` calls in new routes or services.
 - **Named export only for AuthMiddleware**: `import { AuthMiddleware } from '../middleware/auth.js'`
+- **Never add raw `console.*` logs in backend** — always use `logger.info|warn|error|fromError()` from `backend/logger.js`.
 - **Docs are source of internal implementation guidance** (`/docs`). Keep recipes updated when adding features.
 - If something is missing from repo: write **"TODO – not found in repository"** – do not invent.
 

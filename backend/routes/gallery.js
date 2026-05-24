@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import sharp from 'sharp';
 import db from '../database.js';
+import { logger } from '../logger.js';
 import { AuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -52,8 +53,8 @@ async function resizeForWeb(buffer, mimetype) {
     else if (mimetype === 'image/png') s = s.png({ compressionLevel: 8 });
     return await s.toBuffer();
   } catch (err) {
-    console.error('Image resize failed, saving original:', err.message);
-    return buffer;
+    logger.fromError('image_resize_failed', err);
+    throw new Error('Nepodařilo se zpracovat obrázek. Zkuste jiný soubor.');
   }
 }
 
@@ -138,7 +139,7 @@ router.get('/folders', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, asy
     `).all();
     res.json(folders);
   } catch (error) {
-    console.error('Error loading gallery folders:', error);
+    logger.fromError('load_gallery_folders_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -178,7 +179,7 @@ router.post('/folders', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, as
     const folder = await db.prepare('SELECT * FROM gallery_folders WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ message: 'Složka vytvořena', folder });
   } catch (error) {
-    console.error('Error creating gallery folder:', error);
+    logger.fromError('create_gallery_folder_failed', error);
     const msg = handleUniqueError(error, 'Slug složky');
     res.status(error.message?.includes('UNIQUE') ? 400 : 500).json({ error: msg });
   }
@@ -231,7 +232,7 @@ router.put('/folders/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly,
     const folder = await db.prepare('SELECT * FROM gallery_folders WHERE id = ?').get(id);
     res.json({ message: 'Složka aktualizována', folder });
   } catch (error) {
-    console.error('Error updating gallery folder:', error);
+    logger.fromError('update_gallery_folder_failed', error);
     const msg = handleUniqueError(error, 'Slug složky');
     res.status(error.message?.includes('UNIQUE') ? 400 : 500).json({ error: msg });
   }
@@ -264,7 +265,7 @@ router.delete('/folders/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOn
     await db.prepare('DELETE FROM gallery_folders WHERE id = ?').run(id);
     res.json({ message: 'Složka smazána' });
   } catch (error) {
-    console.error('Error deleting gallery folder:', error);
+    logger.fromError('delete_gallery_folder_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -311,7 +312,7 @@ router.get('/images', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, asyn
 
     res.json(images);
   } catch (error) {
-    console.error('Error loading gallery images:', error);
+    logger.fromError('load_gallery_images_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -359,7 +360,7 @@ router.post('/images', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, asy
     const image = await db.prepare('SELECT * FROM gallery_images WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ message: 'Fotka přidána', image });
   } catch (error) {
-    console.error('Error creating gallery image:', error);
+    logger.fromError('create_gallery_image_failed', error);
     const msg = handleUniqueError(error, 'Identifier');
     res.status(error.message?.includes('UNIQUE') ? 400 : 500).json({ error: msg });
   }
@@ -415,7 +416,7 @@ router.put('/images/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, 
     const image = await db.prepare('SELECT * FROM gallery_images WHERE id = ?').get(id);
     res.json({ message: 'Fotka aktualizována', image });
   } catch (error) {
-    console.error('Error updating gallery image:', error);
+    logger.fromError('update_gallery_image_failed', error);
     const msg = handleUniqueError(error, 'Identifier');
     res.status(error.message?.includes('UNIQUE') ? 400 : 500).json({ error: msg });
   }
@@ -431,7 +432,7 @@ router.delete('/images/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOnl
     await db.prepare('DELETE FROM gallery_images WHERE id = ?').run(id);
     res.json({ message: 'Fotka smazána' });
   } catch (error) {
-    console.error('Error deleting gallery image:', error);
+    logger.fromError('delete_gallery_image_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -507,7 +508,7 @@ router.post('/upload', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, han
       errors
     });
   } catch (error) {
-    console.error('Error uploading gallery images:', error);
+    logger.fromError('upload_gallery_images_failed', error);
     res.status(500).json({ error: error.message });
   }
 });

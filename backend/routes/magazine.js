@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { logger } from '../logger.js';
 import { AuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -83,7 +84,7 @@ router.post('/', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, async (re
     const post = await db.prepare('SELECT * FROM magazine_posts WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ message: 'Článek vytvořen', post });
   } catch (error) {
-    console.error('Error creating post:', error);
+    logger.fromError('create_post_failed', error);
     res.status(error.message.includes('UNIQUE') ? 400 : 500).json({ error: error.message });
   }
 });
@@ -120,7 +121,7 @@ router.put('/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, async (
     const post = await db.prepare('SELECT * FROM magazine_posts WHERE id = ?').get(req.params.id);
     res.json({ message: 'Článek aktualizován', post });
   } catch (error) {
-    console.error('Error updating post:', error);
+    logger.fromError('update_post_failed', error);
     res.status(500).json({ error: error.message });
   }
 });

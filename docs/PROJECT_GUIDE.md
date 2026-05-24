@@ -306,6 +306,7 @@ Uses `multer.diskStorage` (not memoryStorage), 10MB limit, no sharp processing.
 - **Rate limiting:** Login: 10/15min/IP (auth.js). Inquiries: 5/5min/IP (inquiries.js). Login rate limit uses in-memory Map (resets on restart).
 - **Headers:** `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `X-Powered-By` removed.
 - **File upload:** MIME + extension whitelist, 50MB max, sharp auto-resize to 2000px.
+- **Logging:** `backend/logger.js` — environment-aware (DEV = colored/human-readable, PROD = JSON structured). All backend code uses `logger.info|warn|error|fromError()`. Never uses raw `console.*`.
 
 ---
 
@@ -315,6 +316,8 @@ From `.env.example` and code:
 
 | Variable | Default | Required in production |
 |----------|---------|----------------------|
+| `NODE_ENV` | `development` | **YES** — set to `production` |
+| `LOG_LEVEL` | `debug` (dev), `info` (prod) | No |
 | `PORT` | `3002` | No |
 | `JWT_SECRET` | `eolite-dev-secret-...` | **YES** – set a strong random string |
 | `EMAIL_MODE` | `mock` | No (mock logs to console + file) |

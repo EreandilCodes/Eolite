@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { logger } from '../logger.js';
 import { AuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -28,7 +29,7 @@ router.get('/categories', async (req, res) => {
     `).all();
     res.json(categories);
   } catch (error) {
-    console.error('Error loading categories:', error);
+    logger.fromError('load_categories_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -79,7 +80,7 @@ router.post('/categories', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly,
     const category = await db.prepare('SELECT * FROM reference_categories WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ message: 'Kategorie vytvořena', category });
   } catch (error) {
-    console.error('Error creating category:', error);
+    logger.fromError('create_category_failed', error);
     res.status(error.message.includes('UNIQUE') ? 400 : 500).json({ error: error.message });
   }
 });
@@ -103,7 +104,7 @@ router.put('/categories/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOn
     const category = await db.prepare('SELECT * FROM reference_categories WHERE id = ?').get(req.params.id);
     res.json({ message: 'Kategorie aktualizována', category });
   } catch (error) {
-    console.error('Error updating category:', error);
+    logger.fromError('update_category_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -173,7 +174,7 @@ router.get('/', async (req, res) => {
     const refs = await db.prepare(query).all(...params);
     res.json(refs);
   } catch (error) {
-    console.error('Error loading references:', error);
+    logger.fromError('load_references_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -241,7 +242,7 @@ router.post('/', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, async (re
     const ref = await db.prepare('SELECT * FROM project_references WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json({ message: 'Reference vytvořena', reference: ref });
   } catch (error) {
-    console.error('Error creating reference:', error);
+    logger.fromError('create_reference_failed', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -279,7 +280,7 @@ router.put('/:id', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, async (
     const ref = await db.prepare('SELECT * FROM project_references WHERE id = ?').get(req.params.id);
     res.json({ message: 'Reference aktualizována', reference: ref });
   } catch (error) {
-    console.error('Error updating reference:', error);
+    logger.fromError('update_reference_failed', error);
     res.status(500).json({ error: error.message });
   }
 });

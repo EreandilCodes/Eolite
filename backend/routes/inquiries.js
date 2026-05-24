@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { logger } from '../logger.js';
 import { AuthMiddleware } from '../middleware/auth.js';
 import emailService from '../services/email.service.js';
 
@@ -105,12 +106,12 @@ router.post('/', async (req, res) => {
       const notificationEmail = setting?.value?.trim() || null;
       await emailService.sendInquiryNotification(inquiry, notificationEmail);
     } catch (emailError) {
-      console.error('Email notification failed (non-critical):', emailError.message);
+      logger.fromError('email_notification_failed', emailError, { type: 'non_critical' });
     }
 
     res.status(201).json({ message: 'Poptávka odeslána. Brzy vás kontaktujeme.' });
   } catch (error) {
-    console.error('Error saving inquiry:', error);
+    logger.fromError('save_inquiry_failed', error);
     res.status(500).json({ error: 'Chyba serveru. Zkuste to prosím znovu.' });
   }
 });

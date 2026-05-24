@@ -1,5 +1,6 @@
 import express from 'express';
 import db from '../database.js';
+import { logger } from '../logger.js';
 import { AuthMiddleware } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -69,7 +70,7 @@ router.put('/:key', AuthMiddleware.verifyToken, AuthMiddleware.adminOnly, async 
     const section = await db.prepare('SELECT * FROM page_content WHERE section_key = ?').get(req.params.key);
     res.json({ message: 'Sekce aktualizována', section });
   } catch (error) {
-    console.error('Error updating page section:', error);
+    logger.fromError('update_page_section_failed', error);
     res.status(500).json({ error: error.message });
   }
 });

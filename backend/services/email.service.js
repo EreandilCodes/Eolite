@@ -10,19 +10,20 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { logger } from '../logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class EmailService {
   constructor() {
     this.mode = process.env.EMAIL_MODE || 'mock';
-    this.adminEmail = process.env.ADMIN_EMAIL || 'admin@eolite.cz';
+    this.adminEmail = process.env.EMAIL_FROM || 'admin@eolite.cz';
     this.fromEmail = process.env.EMAIL_FROM || 'noreply@eolite.cz';
 
     if (this.mode === 'smtp') {
-      console.log('📧 EmailService: SMTP mode');
+      logger.info('email_service_mode', { mode: 'smtp' });
     } else {
-      console.log('📧 EmailService: MOCK mode (emails logged to console)');
+      logger.info('email_service_mode', { mode: 'mock' });
     }
   }
 
@@ -34,7 +35,7 @@ class EmailService {
   async sendInquiryNotification(inquiry, toEmail) {
     const recipient = this._resolveRecipients(toEmail);
     if (!recipient) {
-      console.log('📧 Inquiry notification skipped – no recipient configured');
+      logger.info('email_notification_skipped', { reason: 'no_recipient' });
       return;
     }
 
@@ -113,17 +114,19 @@ class EmailService {
           text
         });
 
-        console.log(`✅ Email sent: ${eventType} → ${to}`);
+        logger.info('email_sent', { eventType, to });
       } catch (error) {
         // CRITICAL: log but never throw
-        console.error(`❌ Email failed (non-critical): ${eventType}`, error.message);
+        logger.fromError('email_send_failed', error, { eventType });
       }
     } else {
       // Mock: log to console and optionally to file
-      console.log(`📧 MOCK EMAIL [${eventType}]`);
-      console.log(`   To: ${to}`);
-      console.log(`   Subject: ${subject}`);
-      console.log(`   Body: ${text.substring(0, 200)}`);
+      logger.info('mock_email', {
+        eventType,
+        to,
+        subject,
+        bodyPreview: text.substring(0, 200)
+      });
 
       try {
         const logDir = path.join(__dirname, '../logs/emails');
