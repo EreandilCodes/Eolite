@@ -1347,10 +1347,10 @@ h1, h2, h3, h4, h5, h6 {
     top: var(--header-height);
     left: 0;
     right: 0;
-    background: var(--color-bg-alt);
-    backdrop-filter: blur(20px) saturate(1.4);
+    background: #141618; /* Force solid, no transparency */
+    backdrop-filter: none; /* Remove background blur on mobile menu for legibility */
     border-bottom: 1px solid var(--color-line);
-    padding: 1.25rem;
+    padding: 1.25rem 0;
     flex-direction: column;
     z-index: 500;
   }
@@ -1363,11 +1363,14 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     gap: 0;
     align-items: stretch;
+    margin: 0;
+    padding: 0;
   }
 
   .main-nav li > a {
     padding: 0.75rem 1rem;
     border-radius: var(--radius-sm);
+    margin: 0;
   }
 
   .main-nav li > a::after {
@@ -1378,9 +1381,9 @@ h1, h2, h3, h4, h5, h6 {
     position: static;
     box-shadow: none;
     border: 1px solid var(--color-line);
-    background: var(--color-bg-alt);
+    background: #141618; /* Solid background for dropdowns in mobile */
     border-radius: var(--radius-sm);
-    margin: 0.25rem 0 0.25rem 1rem;
+    margin: 0;
     padding: 0;
   }
 
