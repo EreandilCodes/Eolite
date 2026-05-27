@@ -326,6 +326,11 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--color-line);
 }
 
+.lang-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .lang-btn.active {
   border-color: var(--color-accent);
   color: var(--color-accent);
@@ -345,9 +350,12 @@ h1, h2, h3, h4, h5, h6 {
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-.mobile-menu-toggle:hover {
+.mobile-menu-toggle:hover,
+.mobile-menu-toggle:focus {
   color: var(--color-text);
   border-color: var(--color-text-muted);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* ============================================================
@@ -1339,11 +1347,12 @@ h1, h2, h3, h4, h5, h6 {
     top: var(--header-height);
     left: 0;
     right: 0;
-    background: var(--color-bg-glass);
+    background: var(--color-bg-alt);
     backdrop-filter: blur(20px) saturate(1.4);
     border-bottom: 1px solid var(--color-line);
     padding: 1.25rem;
     flex-direction: column;
+    z-index: 500;
   }
 
   .main-nav.mobile-open {
@@ -1404,7 +1413,7 @@ h1, h2, h3, h4, h5, h6 {
   .hero-title { font-size: 1.8rem; }
   .hero-subtitle { font-size: 0.95rem; }
   .section-block { padding: 4rem 0; }
-  .btn { padding: 0.75rem 1.5rem; font-size: 0.75rem; }
+  .btn { padding: 0.85rem 1.75rem; font-size: 0.85rem; }
   .card-grid { gap: 1.25rem; }
   .inquiry-form { padding: 1.5rem; }
   .contact-info h3 { font-size: 1.3rem; }
