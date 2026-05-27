@@ -1396,8 +1396,29 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .main-nav li.has-dropdown.dropdown-open > .dropdown {
-    display: block;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
+  /* Force dropdown list items always visible in mobile nav */
+  .dropdown li, .dropdown li a {
+    display: block !important;
+    color: #fff !important;
+    padding: 0.8rem 1.1rem !important;
+    background: none !important;
+    margin: 0 !important;
+    min-height: 1rem;
+  }
+  .dropdown li a {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    line-height: 1.5 !important;
+    border: none !important;
+    outline: none !important;
+  }
+
 
   .mobile-menu-toggle { display: block; }
   .lang-switcher { margin-left: 0; }
